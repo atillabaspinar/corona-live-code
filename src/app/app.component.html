@@ -24,6 +24,9 @@
             <th>confirmed</th>
             <th>recovered</th>
             <th>deaths</th>
+            <th>prev confirmed</th>
+            <th>prev recovered</th>
+            <th>prev deaths</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
@@ -35,6 +38,9 @@
             <td>{{rowData.confirmed}}</td>
             <td>{{rowData.recovered}}</td>
             <td>{{rowData.deaths}}</td>
+            <td>{{rowData.prev?.confirmed}}</td>
+            <td>{{rowData.prev?.recovered}}</td>
+            <td>{{rowData.prev?.deaths}}</td>
           </tr>
         </ng-template>
       </p-treeTable>

@@ -62,9 +62,10 @@ export class AppComponent implements OnInit {
     });
 
 
+    let prev = [];
     this.coronaApi.timeseries().subscribe((result: any[]) => {
-      console.log('prev', result);
-      const prev = result.map(country => {
+
+      prev = result.map(country => {
         let lastDate = 0;
         let lastDateString;
         let lastdata;
@@ -75,7 +76,7 @@ export class AppComponent implements OnInit {
             lastDate = date1;
             lastDateString = seriesEl;
             lastdata = country.timeseries[seriesEl];
-            console.log('last', lastDateString, lastdata);
+            // console.log('last', lastDateString, lastdata);
           }
           return {
             countryregion: country.countryregion,
@@ -83,54 +84,67 @@ export class AppComponent implements OnInit {
           };
         }
       });
-      console.log('prev', prev);
-    });
+      // console.log('prev', prev);
+      this.coronaApi.latest().subscribe((values: Unit[]) => {
 
-    this.coronaApi.latest().subscribe((values: Unit[]) => {
+        const countries: Unit[] = [];
+        const valuesRef = JSON.parse(JSON.stringify(values));
+        this.lastest = values;
 
-      const countries: Unit[] = [];
-      const valuesRef = JSON.parse(JSON.stringify(values));
-      this.lastest = values;
+        for (let i = 0; i < this.lastest.length - 1; i++) {
+          const country = this.findCountryInTree(this.valueTree, this.lastest[i].countryregion);
+          if (country) {
+            const temp: TreeNode = {
+              data: {
+                countryregion: this.lastest[i].provincestate,
+                recovered: this.lastest[i].recovered,
+                deaths: this.lastest[i].deaths,
+                confirmed: this.lastest[i].confirmed
+              },
+              expanded: false,
+              label: this.lastest[i].countryregion,
+              children: []
+            };
+            country.children.push(temp);
 
-      for (let i = 0; i < this.lastest.length - 1; i++) {
-        const country = this.findCountryInTree(this.valueTree, this.lastest[i].countryregion);
-        if (country) {
-          const temp: TreeNode = {
-            data: {
-              countryregion: this.lastest[i].provincestate,
-              recovered: this.lastest[i].recovered,
-              deaths: this.lastest[i].deaths,
-              confirmed: this.lastest[i].confirmed
-            },
-            expanded: false,
-            label: this.lastest[i].countryregion,
-            children: []
-          };
-          country.children.push(temp);
+            // console.log(country.data);
+            country.data.confirmed += this.lastest[i].confirmed;
+            country.data.deaths += this.lastest[i].deaths;
+            country.data.recovered += this.lastest[i].recovered;
+          } else {
+            const element = JSON.parse(JSON.stringify(this.lastest[i]));
 
-          // console.log(country.data);
-          country.data.confirmed += this.lastest[i].confirmed;
-          country.data.deaths += this.lastest[i].deaths;
-          country.data.recovered += this.lastest[i].recovered;
-        } else {
-          const element = JSON.parse(JSON.stringify(this.lastest[i]));
-          const temp: TreeNode = {
-            data: {
-              provincestate: element.provincestate,
-              countryregion: element.countryregion,
-              recovered: element.recovered,
-              deaths: element.deaths,
-              confirmed: element.confirmed
-            },
-            expanded: true,
-            label: element.countryregion,
-            children: []
-          };
-          this.valueTree[0].children.push(temp);
+            const inPrev = prev.find(c => c.countryregion === element.countryregion);
+
+            // countryregion: "Thailand"
+            // data:
+            // confirmed: 2
+            // deaths: 0
+            // recovered: 0
+
+            const temp: TreeNode = {
+              data: {
+                provincestate: element.provincestate,
+                countryregion: element.countryregion,
+                recovered: element.recovered,
+                deaths: element.deaths,
+                confirmed: element.confirmed,
+                prev: { ...inPrev.data }
+              },
+              expanded: true,
+              label: element.countryregion,
+              children: []
+            };
+            console.log(temp)
+            this.valueTree[0].children.push(temp);
+          }
         }
-      }
-      this.valueTree = this.valueTree[0].children;
+        this.valueTree = this.valueTree[0].children;
+      });
+
     });
+
+
 
 
   }
