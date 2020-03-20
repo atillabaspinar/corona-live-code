@@ -81,10 +81,12 @@ export class AppComponent implements OnInit {
               deaths: this.lastest[i].deaths,
               confirmed: this.lastest[i].confirmed
             },
+            expanded: false,
             label: this.lastest[i].countryregion,
             children: []
           };
           country.children.push(temp);
+
           // console.log(country.data);
           country.data.confirmed += this.lastest[i].confirmed;
           country.data.deaths += this.lastest[i].deaths;
