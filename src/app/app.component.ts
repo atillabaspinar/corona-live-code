@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CoronaApiService } from './services/corona-api.service';
-import { Brief, LatestUnit } from './models/api-model';
+import { Brief, Unit } from './models/api-model';
 import { TreeNode } from 'primeng/api';
 
 // export interface TreeNode {
@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   title = 'corona-live';
 
   brief: Brief;
-  lastest: LatestUnit[];
+  lastest: Unit[];
 
   valueTree: TreeNode[] = [{
     data: {
@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
 
   public findCountryInTree(tree: TreeNode[], id: string): TreeNode {
     for (const node of tree) {
-      if ((node.data as LatestUnit).countryregion === id) {
+      if ((node.data as Unit).countryregion === id) {
         return node;
       } else {
         if (node.children && node.children.length > 0) {
@@ -61,15 +61,36 @@ export class AppComponent implements OnInit {
       this.brief = brief;
     });
 
-    this.coronaApi.timeseries().subscribe(val => {
-      console.log(val);
+
+    this.coronaApi.timeseries().subscribe((result: any[]) => {
+      console.log('prev', result);
+      const prev = result.map(country => {
+        let lastDate = 0;
+        let lastDateString;
+        let lastdata;
+        // tslint:disable-next-line:forin
+        for (const seriesEl in country.timeseries) {
+          const date1 = Date.parse(seriesEl);
+          if (date1 > lastDate) {
+            lastDate = date1;
+            lastDateString = seriesEl;
+            lastdata = country.timeseries[seriesEl];
+            console.log('last', lastDateString, lastdata);
+          }
+          return {
+            countryregion: country.countryregion,
+            data: lastdata
+          };
+        }
+      });
+      console.log('prev', prev);
     });
-    this.coronaApi.latest().subscribe((values: LatestUnit[]) => {
-      // console.log(values);
-      const countries: LatestUnit[] = [];
+
+    this.coronaApi.latest().subscribe((values: Unit[]) => {
+
+      const countries: Unit[] = [];
       const valuesRef = JSON.parse(JSON.stringify(values));
       this.lastest = values;
-      // this.lastest = values.slice(0, 10);
 
       for (let i = 0; i < this.lastest.length - 1; i++) {
         const country = this.findCountryInTree(this.valueTree, this.lastest[i].countryregion);
@@ -109,18 +130,7 @@ export class AppComponent implements OnInit {
         }
       }
       this.valueTree = this.valueTree[0].children;
-      // setTimeout(() => {
-      //   this.valueTree = Object.assign({}, this.valueTree);
-      // }, 1);
-      // console.log(JSON.stringify(this.valueTree));
     });
-
-
-    // this.coronaApi.sample().subscribe((val: any) => {
-    //   console.log(val);
-    //   this.sample = val.data;
-    //   console.log(JSON.stringify(this.sample));
-    // });
 
 
   }

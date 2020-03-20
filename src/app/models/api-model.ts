@@ -4,7 +4,7 @@ export interface Brief {
     recovered: number;
 }
 
-export interface LatestUnit {
+export interface Unit {
     provincestate: string;
     countryregion: string;
     lastupdate: Date;
@@ -13,5 +13,5 @@ export interface LatestUnit {
     confirmed: number;
     deaths: number;
     recovered: number;
-    sub?: LatestUnit[];
+    sub?: Unit[];
 }

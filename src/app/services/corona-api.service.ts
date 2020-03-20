@@ -1,7 +1,7 @@
 import { Injectable, NgModule } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Brief, LatestUnit } from '../models/api-model';
+import { Brief, Unit } from '../models/api-model';
 @Injectable({
   providedIn: 'root'
 })
@@ -29,7 +29,7 @@ export class CoronaApiService {
   latest(country?) {
     const path = '/jhu-edu/latest';
     const countryCode = `iso2=${country}`;
-    return this.http.get<LatestUnit[]>(`${this.server}${path}`, {
+    return this.http.get<Unit[]>(`${this.server}${path}`, {
       headers: {
         accept: 'application/json'
       }
