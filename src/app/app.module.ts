@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TreeTableModule } from 'primeng/treetable';
 import { TreeModule } from 'primeng/tree';
-
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [
@@ -16,7 +16,8 @@ import { TreeModule } from 'primeng/tree';
     AppRoutingModule,
     HttpClientModule,
     TreeTableModule,
-    TreeModule
+    TreeModule,
+    ProgressSpinnerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

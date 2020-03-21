@@ -37,8 +37,12 @@ export class CoronaApiService {
   }
 
   // /jhu-edu/timeseries
-  timeseries() {
-    const path = '/jhu-edu/timeseries';
+  timeseries(code?) {
+
+    let path = '/jhu-edu/timeseries';
+    if (code) {
+      path = `/jhu-edu/timeseries?iso2=${code}&onlyCountries=true`;
+    }
     return this.http.get(`${this.server}${path} `, {
       headers: {
         accept: 'application/json'

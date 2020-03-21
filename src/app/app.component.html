@@ -1,36 +1,53 @@
-<div class="container-fluid">
+<div class="container-fluid bg-dark">
   <div class="row">
-
-    <div class="col-6 mb-2">
-      <div class="card">
-        <div class="card-header bg-dark text-light">
-          CORONA VIRUS OUTBREAK
+    <div class="col-12 mb-2">
+      <div class="first-row">
+        <div class="overview card">
+          <div class="card-header bg-dark text-light">
+            CORONA VIRUS OUTBREAK
+          </div>
+          <div class="card-body bg-info text-light">
+            <h6 class="card-subtitle mb-2"> <span class="text-dark">Confirmed Cases:</span> {{brief?.confirmed}}</h6>
+            <h6 class="card-subtitle mb-2"> <span class="text-dark">Deaths: </span>{{brief?.deaths}}</h6>
+            <h6 class="card-subtitle mb-2"> <span class="text-dark">Recovered: </span> {{brief?.recovered}}</h6>
+          </div>
         </div>
-        <div class="card-body">
-          <h6 class="card-subtitle mb-2"> Confirmed Cases: {{brief?.confirmed}}</h6>
-          <h6 class="card-subtitle mb-2"> Deaths: {{brief?.deaths}}</h6>
-          <h6 class="card-subtitle mb-2"> Recovered: {{brief?.recovered}}</h6>
+
+        <div class="card plot">
+          <div class="card-header bg-dark text-light">
+            Click on a country to see historical trend
+          </div>
+
+          <div id="history-plot">
+
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
+
+
+
+    <router-outlet></router-outlet>
+  </div>
   <div class="row">
-    <div class="col-6  mb-2">
-      <p-treeTable [value]="valueTree">
+    <div class="col-12  mb-2">
+      <p-treeTable [value]="valueTree" selectionMode="single" [(selection)]="selectedNode" [autoLayout]="true"
+        dataKey="countryregion" (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
+        [scrollable]="true" scrollHeight="400px">
         <ng-template pTemplate="header">
           <tr>
-            <th>country</th>
-            <th>confirmed</th>
-            <th>recovered</th>
-            <th>deaths</th>
-            <th>prev confirmed</th>
-            <th>prev recovered</th>
-            <th>prev deaths</th>
+            <th>Country</th>
+            <th>Total Confirmed</th>
+            <th>Total Recovered</th>
+            <th>Total Deaths</th>
+            <th>New confirmed</th>
+            <th>New recovered</th>
+            <th>New deaths</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-          <tr>
+          <tr [ttSelectableRow]="rowNode">
             <td>
               <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
               {{rowData.countryregion}}
@@ -38,13 +55,16 @@
             <td>{{rowData.confirmed}}</td>
             <td>{{rowData.recovered}}</td>
             <td>{{rowData.deaths}}</td>
-            <td>{{rowData.prev?.confirmed}}</td>
-            <td>{{rowData.prev?.recovered}}</td>
-            <td>{{rowData.prev?.deaths}}</td>
+            <td>{{rowData.confirmed - rowData.prev?.confirmed}}</td>
+            <td>{{rowData.recovered - rowData.prev?.recovered}}</td>
+            <td>{{rowData.deaths - rowData.prev?.deaths}}</td>
           </tr>
         </ng-template>
       </p-treeTable>
     </div>
   </div>
-  <router-outlet></router-outlet>
 </div>
+
+<p-progressSpinner style="z-index: 1;top: calc(50% - 50px);left: calc(50% - 50px);position: fixed;"
+  styleClass="progress-spinner" *ngIf="loading">
+</p-progressSpinner>
