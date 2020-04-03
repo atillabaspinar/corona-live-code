@@ -34,7 +34,8 @@
               "./node_modules/primeng/resources/primeng.min.css"
             ],
             "scripts": [
-              "./node_modules/plotly.js-dist/plotly.js"
+              "./node_modules/plotly.js-dist/plotly.js",
+              "./node_modules/moment/moment.js"
             ]
           },
           "configurations": {

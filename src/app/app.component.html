@@ -2,37 +2,110 @@
   <div class="row">
     <div class="col-12 mb-2">
       <div class="first-row">
-        <div class="overview card">
-          <div class="card-header bg-dark text-light">
+        <div class="overview card" style="width: 100%;">
+          <div class=" card-header" style="background-color: black; color: white; font-size: 24px;">
+            <!-- <img src="../assets/coronavirus-logo.jpg" style="max-height: 48px;" alt=""> -->
             CORONA VIRUS OUTBREAK
           </div>
-          <div class="card-body bg-info text-light">
-            <h6 class="card-subtitle mb-2"> <span class="text-dark">Confirmed Cases:</span> {{brief?.confirmed}}</h6>
-            <h6 class="card-subtitle mb-2"> <span class="text-dark">Deaths: </span>{{brief?.deaths}}</h6>
-            <h6 class="card-subtitle mb-2"> <span class="text-dark">Recovered: </span> {{brief?.recovered}}</h6>
+          <div>
+            <div class="header-body bg-dark">
+
+              <div style="background-color: lightseagreen;padding: 5px;">
+                <div class="caption"> Confirmed</div>
+                <div>{{brief?.confirmed}}</div>
+              </div>
+              <div style="background-color: lightgreen;padding: 5px;">
+                <div class="caption">Recovered</div>
+                <div>{{brief?.recovered}}</div>
+              </div>
+              <div style="background-color: red;padding: 5px;">
+                <div class="caption">Deaths</div>
+                <div>{{brief?.deaths}}</div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+      <router-outlet></router-outlet>
+    </div>
 
-        <div class="card plot">
-          <div class="card-header bg-dark text-light">
-            Click on a country to see historical trend
+
+  </div>
+  <div class="row">
+    <div class="col-12 mb-2">
+      <div class="plot-area">
+        <p-panel header="Options">
+          <div class="plot-options ">
+            <div class="option-border">
+              <div class="select-options mb-2">
+                <span>Select data:</span>
+                <p-radioButton name="chartType" (onClick)="typeChanged($event)" label="Confirmed" value="confirmed"
+                  [(ngModel)]="selectedChartType">
+                </p-radioButton>
+                <p-radioButton name="chartType" (onClick)="typeChanged($event)" label="Recovered" value="recovered"
+                  [(ngModel)]="selectedChartType">
+                </p-radioButton>
+                <p-radioButton class="mb-2" name="chartType" (onClick)="typeChanged($event)" label="Deaths"
+                  value="deaths" [(ngModel)]="selectedChartType">
+                </p-radioButton>
+                <span>Difference to prev. day: </span>
+                <p-inputSwitch (onChange)="differentialChange($event)" [(ngModel)]="differential"></p-inputSwitch>
+                <span>Log scale: </span>
+                <p-inputSwitch (onChange)="scaleChange($event)" [(ngModel)]="scale"></p-inputSwitch>
+
+              </div>
+              <div class="mb-2">
+                <span>Chart type: </span>
+                <p-dropdown [options]="chartTypes" (onChange)="chartTypeChanged($event)" [(ngModel)]="selectedChartT"
+                  optionLabel="name"></p-dropdown>
+              </div>
+              <div *ngIf="selectedChartT.name==='Bar'" class="bar-options mb-2">
+                <label class="mr-2">Bar options: </label>
+                <p-selectButton (onChange)="barModeChange($event)" [options]="barModes" [(ngModel)]="barMode"
+                  optionLabel="name"></p-selectButton>
+              </div>
+              <div class="range-options mb-4">
+                <label class="mr-2">Time range: {{dateRangeValues[0]}} - {{dateRangeValues[1]}} /
+                  {{dateRange[1]}}</label>
+                <p-slider (onChange)="rangeChanged($event)" [(ngModel)]="dateRangeValues" [range]="true"
+                  [min]="dateRange[0]" [max]="dateRange[1]">
+                </p-slider>
+              </div>
+            </div>
+            <div class="countries-list mb-2">
+              <p-listbox styleClass="country-list" filter="filter" [checkbox]="true" [multiple]="true"
+                [options]="countries" [(ngModel)]="selectedCountries" (onChange)="listSelect($event)">
+                <ng-template let-country let-i="index" pTemplate="item">
+                  <div>{{country.value.countryregion}}</div>
+                  <div class="country-values" style="display: flex; flex-grow: 1; justify-content: flex-end;">
+                    <div style="background-color: lightseagreen;padding: 2px;margin:2px;border-radius: 2px;">
+                      {{country.value.latest.data.confirmed}}
+                    </div>
+                    <div style="background-color: lightgreen;padding: 2px;margin:2px;border-radius: 2px;">
+                      {{country.value.latest.data.recovered}}</div>
+                    <div style="background-color: red;padding: 2px;margin:2px;border-radius: 2px;">
+                      {{country.value.latest.data.deaths}}</div>
+                  </div>
+
+                </ng-template>
+              </p-listbox>
+            </div>
+
           </div>
-
-          <div id="history-plot">
-
+        </p-panel>
+        <div class="ml-2 plot-viewer">
+          <div id="plotly-element">
           </div>
         </div>
       </div>
     </div>
-
-
-
-
-    <router-outlet></router-outlet>
   </div>
-  <div class="row">
+</div>
+
+
+<!-- <div class="row">
     <div class="col-12  mb-2">
-      <p-treeTable [value]="valueTree" selectionMode="single" [(selection)]="selectedNode" [autoLayout]="true"
+      <p-treeTable [value]="valueTree" selectionMode="multiple" [(selection)]="selectedNodes" [autoLayout]="true"
         dataKey="countryregion" (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
         [scrollable]="true" scrollHeight="400px">
         <ng-template pTemplate="header">
@@ -62,9 +135,7 @@
         </ng-template>
       </p-treeTable>
     </div>
-  </div>
-</div>
-
-<p-progressSpinner style="z-index: 1;top: calc(50% - 50px);left: calc(50% - 50px);position: fixed;"
-  styleClass="progress-spinner" *ngIf="loading">
+  </div> -->
+<!-- style="z-index: 1;top: calc(50% - 50px);left: calc(50% - 50px);position: fixed;" -->
+<p-progressSpinner styleClass="progress-spinner" *ngIf="loading">
 </p-progressSpinner>
